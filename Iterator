@@ -1,1 +1,90 @@
-//Шаблон Итератор - абстрактный интерфейс для последовательного доступа ко всем элементам составного объекта без раскрытия его внутренней структуры
+//Паттерн Итератор - абстрактный интерфейс для последовательного доступа ко всем элементам составного объекта без раскрытия его внутренней структуры
+
+using System;
+
+class Baker
+{
+    public void BakeCakes(Bakery bakery)
+    {
+        ICakeIterator iterator = bakery.CreateNumerator();
+        while(iterator.HasNext())
+        {
+            Cake cake = iterator.Next();
+            Console.WriteLine(cake.Name);
+        }
+    }
+}
+ 
+interface ICakeIterator
+{
+    bool HasNext();
+    Cake Next();
+}
+interface ICakeNumerable
+{
+    ICakeIterator CreateNumerator();
+    int Count { get; }
+    Cake this[int index] { get;}
+}
+class Cake
+{
+    public string Name { get; set; }
+}
+ 
+class Bakery : ICakeNumerable
+{
+    private Cake[] cakes;
+    public Bakery()
+    {
+        cakes = new Cake[]
+        {
+            new Cake {Name="Черничный пирог"},
+            new Cake {Name="Маффин"},
+            new Cake {Name="Тыквенный торт"},
+            new Cake {Name="Бисквит"}
+        };
+    }
+    public int Count
+    {
+        get { return cakes.Length; }
+    }
+ 
+    public Cake this[int index]
+    {
+        get { return cakes[index]; }
+    }
+    public ICakeIterator CreateNumerator()
+    {
+        return new BakeryNumerator(this);
+    }
+}
+class BakeryNumerator : ICakeIterator
+{
+    ICakeNumerable totally;
+    int index=0;
+    public BakeryNumerator(ICakeNumerable a)
+    {
+        totally = a;
+    }
+    public bool HasNext()
+    {
+        return index<totally.Count;
+    }
+ 
+    public Cake Next()
+    {
+        return totally[index++];
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Bakery bakery = new Bakery();
+        Baker baker = new Baker();
+        baker.BakeCakes(bakery);
+ 
+        Console.Read();
+    }
+}
