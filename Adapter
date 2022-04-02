@@ -1,0 +1,66 @@
+//Паттерн Адаптер - предназначен для преобразования интерфейса одного класса в интерфейс другого
+
+using System;
+
+interface ITransport
+{
+    void Drive();
+}
+
+class Caravan : ITransport
+{
+    public void Drive()
+    {
+        Console.WriteLine("Караван идет");
+    }
+}
+
+class Driver
+{
+    public void Travel(ITransport transport)
+    {
+        transport.Drive();
+    }
+}
+
+interface IAnimal
+{
+    void Move();
+}
+
+class Dog : IAnimal
+{
+    public void Move()
+    {
+        Console.WriteLine("Собака лает");
+    }
+}
+
+class DogToTransportAdapter : ITransport
+{
+    Dog dog;
+    public DogToTransportAdapter(Dog d)
+    {
+        dog = d;
+    }
+ 
+    public void Drive()
+    {
+        dog.Move();
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Driver driver = new Driver();
+        Caravan caravan = new Caravan();
+        Dog dog = new Dog();
+        ITransport dogTransport = new DogToTransportAdapter(dog);
+        
+        driver.Travel(dogTransport);
+        driver.Travel(caravan);
+        Console.Read();
+    }
+}
